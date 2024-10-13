@@ -4,132 +4,62 @@ import { Link } from 'react-router-dom';
 import logo from './csi_logo.png';
 
 const NavBar = () => {
-	const [nav, setNav] = useState(false);
-	const [isNavFixed, setIsNavFixed] = useState(false);
+  const [nav, setNav] = useState(false);
+  const [isNavFixed, setIsNavFixed] = useState(false);
 
-	useEffect(() => {
-		const handleScroll = () => {
-			if (window.scrollY > 70) {
-				setIsNavFixed(true);
-			} else {
-				setIsNavFixed(false);
-			}
-		};
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsNavFixed(window.scrollY > 70);
+    };
 
-		window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-		return () => {
-			window.removeEventListener('scroll', handleScroll);
-		};
-	}, []);
+  useEffect(() => {
+    document.body.style.overflowY = nav ? 'hidden' : 'scroll';
+  }, [nav]);
 
-	useEffect(() => {
-		const body = document.querySelector('body');
+  const handleNav = () => setNav(prev => !prev);
 
-		if (nav) {
-			body.style.overflowY = 'hidden';
-		} else {
-			body.style.overflowY = 'scroll';
-		}
-	});
+  return (
+    <div
+      className={`flex items-center justify-between py-3 px-4 md:px-6 ${
+        isNavFixed
+          ? 'shadow-lg fixed top-0 w-full z-50 backdrop-blur-lg bg-white/30'
+          : 'bg-white border-b border-black/20'
+      }`}
+    >
+      <Link to="/">
+        <img src={logo} alt="CSI" className="h-12 w-12" />
+      </Link>
+      <ul className="hidden md:flex items-center gap-4 font-bold text-lg">
+        <li><Link to="/">Home</Link></li>
+        <li><Link to="/team">Team</Link></li>
+        <li><Link to="/">Events</Link></li>
+        <li><Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded">Register</Link></li>
+      </ul>
 
-	const handleNav = () => {
-		setNav(prevNav => !prevNav);
-	};
+      <div className="md:hidden cursor-pointer z-50" onClick={handleNav}>
+        {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
+      </div>
 
-	return (
-		<div
-			className={` flex flex-row items-center justify-between py-3  mx-auto px-6 ${
-				isNavFixed
-					? 'shadow-lg fixed top-0  w-full z-50 flex justify-center backdrop-blur-lg bg-white/30'
-					: ' bg-white border-b border-black/20'
-			}`}
-		>
-			<h1 className=''>
-				<Link to='/'>
-					<img src={logo} alt='csi' height='50px' width='50px' />
-				</Link>
-			</h1>
-			<ul
-				className={` flex-row font-bold text-lg items-center gap-4 hidden md:flex `}
-			>
-				<li>
-					<Link to='/'>Home</Link>
-				</li>
-
-				<li>
-					<Link className='cursor-pointer' to={'/team'}>Team</Link>
-				</li>
-
-				<li>
-					<Link to={'/'}>Events</Link>
-				</li>
-
-				<li>
-					<button className=''>
-						<Link to='/register'>Register</Link>
-					</button>
-				</li>
-			</ul>
-
-			<div
-				className='cursor-pointer block md:hidden z-50'
-				onClick={handleNav}
-			>
-				{!nav ? (
-					<AiOutlineMenu size={20} />
-				) : (
-					<AiOutlineClose size={20} />
-				)}
-			</div>
-
-			<div
-				className={`${
-					nav
-						? 'fixed left-0 top-0 w-[100%] z-40 h-screen border-r ease-in-out duration-500'
-						: 'fixed left-[-100%]'
-				} bg-white flex items-center justify-center`}
-			>
-				<ul className='pt-24 uppercase gap-4 flex flex-col px-6 justify-center items-center my-auto'>
-					<li
-						onClick={() => {
-							setNav(false);
-						}}
-					>
-						<Link to='/'>Home</Link>
-					</li>
-
-					<li
-						onClick={() => {
-							setNav(false);
-						}}
-					>
-						<Link>Team</Link>
-					</li>
-					<li
-						onClick={() => {
-							setNav(false);
-						}}
-					>
-						<Link>Events</Link>{' '}
-					</li>
-
-					<li>
-						<button
-							onClick={() => {
-								setNav(false);
-							}}
-							className=''
-						>
-							<Link to='/register' className=''>
-								REGISTER
-							</Link>
-						</button>
-					</li>
-				</ul>
-			</div>
-		</div>
-	);
+      {nav && (
+        <div className="fixed inset-0 bg-white z-40 flex items-center justify-center">
+          <ul className="flex flex-col gap-6 text-center">
+            <li><Link to="/" onClick={() => setNav(false)}>Home</Link></li>
+            <li><Link to="/team" onClick={() => setNav(false)}>Team</Link></li>
+            <li><Link to="/" onClick={() => setNav(false)}>Events</Link></li>
+            <li>
+              <Link to="/register" onClick={() => setNav(false)} className="bg-blue-600 text-white px-4 py-2 rounded">
+                Register
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default NavBar;
